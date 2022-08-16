@@ -1,5 +1,5 @@
 // Set constraints for the video stream
-var constraints = { video: { facingMode: { exact:  "user" }}, audio: false };
+var constraints = { video: { facingMode: "user" }, audio: false };
 //var constraints = { video: { facingMode: { exact:  "environment" }}, audio: false };
 var track = null;
 
@@ -33,11 +33,11 @@ cameraTrigger.onclick = function() {
     // track.stop();
 };
 
-/*downloadTrigger.onclick = function() {
+downloadTrigger.onclick = function() {
     const canvas = cameraSensor.toDataURL("image/jpeg")
     .replace("image/jpeg", "image/octet-stream");    
     downloadTrigger.setAttribute("href", canvas);
-};*/
+};
 
 // Start the video stream when the window loads
 window.addEventListener("load", cameraStart, false);
