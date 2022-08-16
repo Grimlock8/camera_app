@@ -28,7 +28,7 @@ html, body{
     text-align: center;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
     position: fixed;
-    bottom: 30px;
+    bottom: 60px;
     left: calc(50% - 100px);
 }
 
@@ -42,8 +42,8 @@ html, body{
     padding: 15px 20px;
     text-align: center;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
-    position: relative;
-    bottom: 50px;
+    position: fixed;
+    bottom: 5px;
     left: calc(50% - 100px);
 }
 
