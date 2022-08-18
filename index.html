@@ -27,28 +27,29 @@
 		<link rel="stylesheet" href="style.css"> 
 	</head>
 	<body>
-		<button id="showVideo">Open camera</button>
-		<!-- Camera -->
-		<main id="camera">
+<div id="container">
 
-		    <!-- Camera sensor -->
-		    <canvas id="camera--sensor"></canvas>
-		    
-		    <!-- Camera view -->
-		    <video id="camera--view" autoplay playsinline></video>
-		    
-		    <!-- Camera output -->
-		    <img src="//:0" alt="" id="camera--output">
 
-		    <!-- Camera trigger -->
-		    <button id="camera--trigger">Take a picture</button>
-			
-			
-        	    <a id="downloadPhoto" download="my-photo.jpg" class="button" role="button">Download</a>
+    <button id="showVideo">Open camera</button>
 
-		</main>
-		
-		<div id="errorMsg"></div>
+        <!-- Camera -->
+    <div id="camera">
+        <!-- Camera sensor -->
+        <canvas id="camera--sensor"></canvas>
+        <!-- Camera view -->
+        <video id="camera--view" autoplay playsinline></video>
+        <!-- Camera output -->
+        <img src="//:0" alt="" id="camera--output">
+        <!-- Camera trigger -->
+        <a download="my-photo.jpg" id="camera--trigger">Take a picture</a>
+
+        <a id="downloadPhoto" download="my-photo.jpg" class="button" role="button">Download</a>
+    </div>
+
+    <div id="errorMsg"></div>
+
+
+</div>
 
 		<!-- Reference to your JavaScript file -->
 		<script src="app.js"></script>
