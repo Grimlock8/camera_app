@@ -4,20 +4,32 @@ html, body{
   height: 100%;
   width: 100%;
 }
+select {
+  width: 150px;
+}
+video {
+  margin: 10px 0 0 0;
+}
 
-#camera, #camera--view, #camera--sensor, #camera--output{
-    position: fixed;
+
+.view-area {
+    background-color:aqua;
+    width: 500px !important;
+    height: 300px !important;
+}
+#camera, #mmgum-local, #camera--sensor, #camera--output{
+    position: relative;
     height: 100%;
     width: 100%;
     object-fit: cover;
 }
 
-/*
-#camera--view, #camera--sensor, #camera--output{
+
+#mmgum-local, #camera--sensor, #camera--output{
     transform: scaleX(-1);
     filter: FlipH;
 }
-*/
+
 #camera--trigger{
     width: 200px;
     background-color: black;
@@ -29,7 +41,7 @@ html, body{
     text-align: center;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
     position: fixed;
-    bottom: 60px;
+    bottom: 110px;
     left: calc(50% - 100px);
 }
 
@@ -44,8 +56,8 @@ html, body{
     text-align: center;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
     position: fixed;
-    bottom: 5px;
-    left: calc(50% - 120px);
+    bottom: 55px;
+    left: calc(50% - 119px);
 }
 
 .taken{
