@@ -48,19 +48,13 @@ async function init(e) {
 
 document.querySelector('#showVideo').addEventListener('click', e => init(e));
 
-// Set constraints for the video stream
-//var constraints = { video: { facingMode: "user" }, audio: false };
-var constraints = { video: { facingMode: { exact:  "environment" }}, audio: false };
-var track = null;
-
-// Define constants
-const cameraView = document.querySelector("#camera--view"),
+const cameraView = document.querySelector("#mmgum-local"),
     cameraOutput = document.querySelector("#camera--output"),
     cameraSensor = document.querySelector("#camera--sensor"),
-    cameraTrigger = document.querySelector("#camera--trigger"),  
+    cameraTrigger = document.querySelector("#camera--trigger"),   
     downloadTrigger = document.querySelector("#downloadPhoto");
 
-// Access the device camera and stream to cameraView
+    // Access the device camera and stream to cameraView
 function cameraStart() {
     navigator.mediaDevices
         .getUserMedia(constraints)
@@ -73,15 +67,17 @@ function cameraStart() {
         });
 }
 
+
 // Take a picture when cameraTrigger is tapped
 cameraTrigger.onclick = function() {
     cameraSensor.width = cameraView.videoWidth;
     cameraSensor.height = cameraView.videoHeight;
     cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
-    cameraOutput.src = cameraSensor.toDataURL("image/webp");
+    cameraOutput.src = cameraSensor.toDataURL("image/jpeg");
     cameraOutput.classList.add("taken");
-    // track.stop();
+     track.stop();
 };
+
 
 downloadTrigger.onclick = function() {
     const canvas = cameraSensor.toDataURL("image/jpeg")
@@ -89,19 +85,6 @@ downloadTrigger.onclick = function() {
     downloadTrigger.setAttribute("href", canvas);
 };
 
+
 // Start the video stream when the window loads
 window.addEventListener("load", cameraStart, false);
-
-
-// Install ServiceWorker
-if ('serviceWorker' in navigator) {
-  console.log('CLIENT: service worker registration in progress.');
-  navigator.serviceWorker.register( '/camera-app/part-2/sw.js' , { scope : ' ' } ).then(function() {
-    console.log('CLIENT: service worker registration complete.');
-  }, function() {
-    console.log('CLIENT: service worker registration failure.');
-  });
-} else {
-  console.log('CLIENT: service worker is not supported.');
-}
-
