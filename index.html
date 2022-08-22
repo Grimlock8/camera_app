@@ -1,3 +1,9 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
 <button id="start-camera">Start Camera</button>
 <video id="video" width="1280" height="960" autoplay></video>
 <button id="click-photo">Click Photo</button>
@@ -11,21 +17,22 @@
     const downloadTrigger = document.querySelector("#downloadPhoto");
 
 
+
 document.querySelector("#start-camera").addEventListener('click', async function() {
     // suppose we require a full HD video
-    let constraints = { 
-                        audio: true, 
-                        video: {                                
-                            facingMode: "environment",
-                            width: { ideal: 1920 }, 
-                            height: { ideal: 1080 }  
-                        }
-                    };
 
+    let constraints = {
+        audio: true,
+        video: {
+            facingMode: "user",
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+        }
+    };
 
-    let stream = await navigator.mediaDevices.getUserMedia(constraints);
+    var stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-    let stream_settings = stream.getVideoTracks()[0].getSettings();
+    const stream_settings = stream.getVideoTracks()[0].getSettings();
 
     // actual width & height of the camera video
     let stream_width = stream_settings.width;
@@ -41,10 +48,29 @@ let video = document.querySelector("#video");
 let click_button = document.querySelector("#click-photo");
 let canvas = document.querySelector("#canvas");
 
+
 camera_button.addEventListener('click', async function() {
    	let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
 	video.srcObject = stream;
 });
+
+/*function startVid() {
+    navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = streaming;
+};
+
+function cameraStart() {
+    navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(function(stream) {
+            track = stream.getTracks()[0];
+            video.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error("Oops. Something is broken.", error);
+        });
+}*/
+
 
 click_button.addEventListener('click', function() {
    	canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -61,6 +87,208 @@ downloadTrigger.onclick = function() {
 
     downloadTrigger.setAttribute("href", canvases);
 };
+/*
+window.addEventListener("load", startVid, false);
+
+
+'use strict';
+
+// Put variables in global scope to make them available to the browser console.
+const constraints = window.constraints = {
+  audio: false,
+  video: true
+};
+
+const constraints = window.constraints = { video: { facingMode: "environment" }, audio: false };
+console.log("this" + constraints.width)
+
+
+function handleSuccess(stream) {
+  const video = document.querySelector('video');
+  const videoTracks = stream.getVideoTracks();
+  console.log('Got stream with constraints:', constraints);
+  console.log(`Using video device: ${videoTracks[0].label}`);
+  window.stream = stream; // make variable available to browser console
+  video.srcObject = stream;
+  console.log("video" + video.width)
+  
+  console.log("videoTracks" + videoTracks.width)
+
+}
+
+function handleError(error) {
+  if (error.name === 'OverconstrainedError') {
+    const v = constraints.video;
+    errorMsg(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
+  } else if (error.name === 'NotAllowedError') {
+    errorMsg('Permissions have not been granted to use your camera and ' +
+      'microphone, you need to allow the page access to your devices in ' +
+      'order for the demo to work.');
+  }
+  errorMsg(`getUserMedia error: ${error.name}`, error);
+}
+
+function errorMsg(msg, error) {
+  const errorElement = document.querySelector('#errorMsg');
+  errorElement.innerHTML += `<p>${msg}</p>`;
+  if (typeof error !== 'undefined') {
+    console.error(error);
+  }
+}
+
+async function init(e) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    
+  console.log("stream " + navigator.mediaDevices.getUserMedia(constraints))
+    handleSuccess(stream);
+    e.target.disabled = true;
+  } catch (e) {
+    handleError(e);
+  }
+}
+
+document.querySelector('#showVideo').addEventListener('click', e => init(e));
+
+const cameraView = document.querySelector("#mmgum-local"),
+    cameraOutput = document.querySelector("#camera--output"),
+    cameraSensor = document.querySelector("#camera--sensor"),
+    cameraTrigger = document.querySelector("#camera--trigger"),   
+    downloadTrigger = document.querySelector("#downloadPhoto");
+
+    // Access the device camera and stream to cameraView
+function cameraStart() {
+    navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(function(stream) {
+            track = stream.getTracks()[0];
+            cameraView.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error("Oops. Something is broken.", error);
+        });
+}
+
+
+// Take a picture when cameraTrigger is tapped
+cameraTrigger.onclick = function() {
+    cameraSensor.width = cameraView.videoWidth;
+    cameraSensor.height = cameraView.videoHeight;
+    console.log(cameraSensor.width)
+    cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
+    cameraOutput.src = cameraSensor.toDataURL("image/jpeg");
+    cameraOutput.classList.add("taken");
+     track.stop();
+};
+
+
+downloadTrigger.onclick = function() {
+    const canvas = cameraSensor.toDataURL("image/jpeg")
+    .replace("image/jpeg", "image/octet-stream");    
+    downloadTrigger.setAttribute("href", canvas);
+};
+
+
+// Start the video stream when the window loads
+window.addEventListener("load", cameraStart, false);
+*/
 </script>
 
+<style>
 
+video {
+  background: #263238;
+  height: 600px;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  display: block;
+}
+
+button {
+  margin: 0 auto;
+  display: block;
+}
+
+canvas {
+  display: block;
+  margin: 24px auto;
+  width: 100%;
+  height: 198px;
+}
+
+
+
+
+
+
+select {
+  width: 150px;
+}
+video {
+  margin: 10px 0 0 0;
+}
+
+
+.view-area {
+    background-color:aqua;
+    width: 500px !important;
+    height: 300px !important;
+}
+#camera, #mmgum-local, #camera--sensor, #camera--output{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+
+#mmgum-local, #camera--sensor, #camera--output{
+    transform: scaleX(-1);
+    filter: FlipH;
+}
+
+#camera--trigger{
+    width: 200px;
+    background-color: black;
+    color: white;
+    font-size: 16px;
+    border-radius: 30px;
+    border: none;
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
+    position: fixed;
+    bottom: 110px;
+    left: calc(50% - 100px);
+}
+
+#downloadPhoto{
+    width: 200px;
+    background-color: black;
+    color: white;
+    font-size: 16px;
+    border-radius: 30px;
+    border: none;
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
+    position: fixed;
+    bottom: 55px;
+    left: calc(50% - 119px);
+}
+
+.taken{
+    height: 100px!important;
+    width: 100px!important;
+    transition: all 0.5s ease-in;
+    border: solid 3px white;
+    box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
+    top: 20px;
+    right: 20px;
+    z-index: 2;
+}
+
+</style>
