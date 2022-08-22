@@ -15,10 +15,10 @@ document.querySelector("#start-camera").addEventListener('click', async function
     // suppose we require a full HD video
     let constraints = { 
                         audio: true, 
-                        video: {                             
-                            { facingMode: "environment" },
+                        video: {                                
+                            facingMode: "environment",
                             width: { ideal: 1920 }, 
-                            height: { ideal: 1080 } 
+                            height: { ideal: 1080 }  
                         }
                     };
 
