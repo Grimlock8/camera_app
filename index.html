@@ -1,22 +1,27 @@
 <button id="start-camera">Start Camera</button>
-<video id="video" width="320" height="240" autoplay></video>
+<video id="video" width="1280" height="960" autoplay></video>
 <button id="click-photo">Click Photo</button>
-<canvas id="canvas" width="320" height="240"></canvas>
-
+<canvas id="canvas" width="1280" height="960"></canvas>
+<a id="downloadPhoto" download="my-photo.jpg" class="button" role="button">Download</a>
 
 
 
 
 <script>
+    const downloadTrigger = document.querySelector("#downloadPhoto");
+
+
 document.querySelector("#start-camera").addEventListener('click', async function() {
     // suppose we require a full HD video
     let constraints = { 
                         audio: true, 
-                        video: { 
+                        video: {                             
+                            { facingMode: "environment" },
                             width: { ideal: 1920 }, 
                             height: { ideal: 1080 } 
                         }
                     };
+
 
     let stream = await navigator.mediaDevices.getUserMedia(constraints);
 
@@ -44,11 +49,18 @@ camera_button.addEventListener('click', async function() {
 click_button.addEventListener('click', function() {
    	canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
    	let image_data_url = canvas.toDataURL('image/jpeg');
+       click_button.setAttribute("href", canvas);
 
    	// data url of the image
    	console.log(image_data_url);
 });
 
+downloadTrigger.onclick = function() {
+    const canvases = canvas.toDataURL("image/jpeg")
+    .replace("image/jpeg", "image/octet-stream");   
+
+    downloadTrigger.setAttribute("href", canvases);
+};
 </script>
 
 
