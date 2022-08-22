@@ -24,7 +24,7 @@ document.querySelector("#start-camera").addEventListener('click', async function
     let constraints = {
         audio: false,
         video: {
-            facingMode: "user",
+            exact: "environment",
             width: { ideal: 1920 },
             height: { ideal: 1080 }
         }
