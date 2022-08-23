@@ -10,12 +10,16 @@
 <canvas id="canvas" width="1280" height="960"></canvas>
 <a id="downloadPhoto" download="my-photo.jpg" class="button" role="button">Download</a>
 
+<div class="section-content"><iframe class="sample-code-frame" title="Examples sample" id="frame_examples" width="600" height="80" src="https://yari-demos.prod.mdn.mozit.cloud/en-US/docs/Web/API/MediaTrackSupportedConstraints/facingMode/_sample_.examples.html" loading="lazy"></iframe></div>
 
 
 
 <script>
     const downloadTrigger = document.querySelector("#downloadPhoto");
-
+	
+const result = document.getElementById("result");
+const supported = navigator.mediaDevices.getSupportedConstraints().facingMode;
+result.textContent = supported ? "Supported!" : "Not supported!";
 
 
 document.querySelector("#start-camera").addEventListener('click', async function() {
@@ -30,13 +34,14 @@ document.querySelector("#start-camera").addEventListener('click', async function
         }
     };*/
 	
-    const constraints = {
-	  video: {
-	    facingMode: {
-	      exact: "environment"
-	    }
-	  }
-	};
+const constraints = { 
+    video: { 
+        facingMode: {
+            exact: "environment"
+        }
+    }, 
+    //audio: false 
+};
 
     var stream = await navigator.mediaDevices.getUserMedia(constraints);
 
