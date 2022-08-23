@@ -21,14 +21,22 @@
 document.querySelector("#start-camera").addEventListener('click', async function() {
     // suppose we require a full HD video
 
-    let constraints = {
+    /*let constraints = {
         audio: false,
         video: {
             facingMode: { exact: "environment", },
             width: { ideal: 1920 },
             height: { ideal: 1080 }
         }
-    };
+    };*/
+	
+    const constraints = {
+	  video: {
+	    facingMode: {
+	      exact: "environment"
+	    }
+	  }
+	};
 
     var stream = await navigator.mediaDevices.getUserMedia(constraints);
 
