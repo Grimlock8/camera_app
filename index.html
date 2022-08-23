@@ -1,173 +1,51 @@
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
 @{
-    ViewData["Title"] = "Home Page";
+}
+@{
+    ViewData["Title"] = "Camera Page";
 }
 
 
 
-<button id="start-camera">Start Camera</button>
-<video id="video" width="1280" height="960" autoplay></video>
-<button id="click-photo">Click Photo</button>
-<canvas id="canvas" width="1280" height="960"></canvas>
-<a id="downloadPhoto" download="my-photo.jpg" class="button" role="button">Download</a>
+<div class="view-area">
 
-<div class="section-content"><iframe class="sample-code-frame" title="Examples sample" id="frame_examples" width="600" height="80" src="https://yari-demos.prod.mdn.mozit.cloud/en-US/docs/Web/API/MediaTrackSupportedConstraints/facingMode/_sample_.examples.html" loading="lazy"></iframe></div>
+    <!-- Camera -->
+    <div id="camera">
+        <!-- Camera sensor -->
+        <canvas id="camera--sensor"></canvas>
+        <!-- Camera view -->
+        <video id="camera--view" autoplay playsinline></video>
+        <!-- Camera output -->
+        <img src="//:0" alt="" id="camera--output">
+        <!-- Camera trigger -->
+        <a download="my-photo.jpg" id="camera--trigger">Take a picture</a>
+
+        <a id="downloadPhoto" download="my-photo.jpg" class="button" role="button">Download</a>
+    </div>
+
+
+
+</div>
 
 
 
 <script>
-    const downloadTrigger = document.querySelector("#downloadPhoto");
-	
-const result = document.getElementById("result");
-const supported = navigator.mediaDevices.getSupportedConstraints().facingMode;
-result.textContent = supported ? "Supported!" : "Not supported!";
-
-
-document.querySelector("#start-camera").addEventListener('click', async function() {
-    // suppose we require a full HD video
-
-    /*let constraints = {
-        audio: false,
-        video: {
-            facingMode: { exact: "environment", },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 }
-        }
-    };*/
-	
-const constraints = { 
-    video: { 
-        facingMode:  "environment"
-    }, 
-    //audio: false 
-};
-
-    var stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-    const stream_settings = stream.getVideoTracks()[0].getSettings();
-
-    // actual width & height of the camera video
-    let stream_width = stream_settings.width;
-    let stream_height = stream_settings.height;
-
-    console.log('Width: ' + stream_width + 'px');
-    console.log('Height: ' + stream_height + 'px');
-});
-
-
- let camera_button = document.querySelector("#start-camera");
-let video = document.querySelector("#video");
-let click_button = document.querySelector("#click-photo");
-let canvas = document.querySelector("#canvas");
-
-
-camera_button.addEventListener('click', async function() {
-   	let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-	video.srcObject = stream;
-});
-
-/*function startVid() {
-    navigator.mediaDevices.getUserMedia(constraints);
-    video.srcObject = streaming;
-};
-
-function cameraStart() {
-    navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then(function(stream) {
-            track = stream.getTracks()[0];
-            video.srcObject = stream;
-        })
-        .catch(function(error) {
-            console.error("Oops. Something is broken.", error);
-        });
-}*/
-
-
-click_button.addEventListener('click', function() {
-   	canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-   	let image_data_url = canvas.toDataURL('image/jpeg');
-       click_button.setAttribute("href", canvas);
-
-   	// data url of the image
-   	console.log(image_data_url);
-});
-
-downloadTrigger.onclick = function() {
-    const canvases = canvas.toDataURL("image/jpeg")
-    .replace("image/jpeg", "image/octet-stream");   
-
-    downloadTrigger.setAttribute("href", canvases);
-};
-/*
-window.addEventListener("load", startVid, false);
-
-
-'use strict';
-
-// Put variables in global scope to make them available to the browser console.
-const constraints = window.constraints = {
-  audio: false,
-  video: true
-};
-
-const constraints = window.constraints = { video: { facingMode: "environment" }, audio: false };
-console.log("this" + constraints.width)
-
-
-function handleSuccess(stream) {
-  const video = document.querySelector('video');
-  const videoTracks = stream.getVideoTracks();
-  console.log('Got stream with constraints:', constraints);
-  console.log(`Using video device: ${videoTracks[0].label}`);
-  window.stream = stream; // make variable available to browser console
-  video.srcObject = stream;
-  console.log("video" + video.width)
-  
-  console.log("videoTracks" + videoTracks.width)
-
-}
-
-function handleError(error) {
-  if (error.name === 'OverconstrainedError') {
-    const v = constraints.video;
-    errorMsg(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
-  } else if (error.name === 'NotAllowedError') {
-    errorMsg('Permissions have not been granted to use your camera and ' +
-      'microphone, you need to allow the page access to your devices in ' +
-      'order for the demo to work.');
-  }
-  errorMsg(`getUserMedia error: ${error.name}`, error);
-}
-
-function errorMsg(msg, error) {
-  const errorElement = document.querySelector('#errorMsg');
-  errorElement.innerHTML += `<p>${msg}</p>`;
-  if (typeof error !== 'undefined') {
-    console.error(error);
-  }
-}
-
-async function init(e) {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
     
-  console.log("stream " + navigator.mediaDevices.getUserMedia(constraints))
-    handleSuccess(stream);
-    e.target.disabled = true;
-  } catch (e) {
-    handleError(e);
-  }
-}
+// Set constraints for the video stream
+var constraints = { video: { facingMode: { exact: "environment" } }, audio: false };
+//var constraints = { video: { facingMode: "user" }, audio: false };
+var track = null;
 
-document.querySelector('#showVideo').addEventListener('click', e => init(e));
-
-const cameraView = document.querySelector("#mmgum-local"),
+// Define constants
+const cameraView = document.querySelector("#camera--view"),
     cameraOutput = document.querySelector("#camera--output"),
     cameraSensor = document.querySelector("#camera--sensor"),
     cameraTrigger = document.querySelector("#camera--trigger"),   
     downloadTrigger = document.querySelector("#downloadPhoto");
 
-    // Access the device camera and stream to cameraView
+// Access the device camera and stream to cameraView
 function cameraStart() {
     navigator.mediaDevices
         .getUserMedia(constraints)
@@ -180,18 +58,15 @@ function cameraStart() {
         });
 }
 
-
 // Take a picture when cameraTrigger is tapped
 cameraTrigger.onclick = function() {
     cameraSensor.width = cameraView.videoWidth;
     cameraSensor.height = cameraView.videoHeight;
-    console.log(cameraSensor.width)
     cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
     cameraOutput.src = cameraSensor.toDataURL("image/jpeg");
     cameraOutput.classList.add("taken");
-     track.stop();
+    // track.stop();
 };
-
 
 downloadTrigger.onclick = function() {
     const canvas = cameraSensor.toDataURL("image/jpeg")
@@ -202,65 +77,34 @@ downloadTrigger.onclick = function() {
 
 // Start the video stream when the window loads
 window.addEventListener("load", cameraStart, false);
-*/
+    
+
+
+
 </script>
 
+
 <style>
-
-video {
-  background: #263238;
-  height: 600px;
-  width: 100%;
-}
-
-input {
-  width: 100%;
-  display: block;
-}
-
-button {
-  margin: 0 auto;
-  display: block;
-}
-
-canvas {
-  display: block;
-  margin: 24px auto;
-  width: 100%;
-  height: 198px;
-}
-
-
-
-
-
-
-select {
-  width: 150px;
-}
-video {
-  margin: 10px 0 0 0;
-}
-
-
 .view-area {
     background-color:aqua;
     width: 500px !important;
     height: 300px !important;
 }
-#camera, #mmgum-local, #camera--sensor, #camera--output{
-    position: relative;
-    height: 100%;
-    width: 100%;
+#camera, #camera--view, #camera--sensor, #camera--output{
+    position: fixed;
+    height: 50%;
+    width: 50%;
     object-fit: cover;
 }
 
-
-#mmgum-local, #camera--sensor, #camera--output{
+/* This can be deleted or commented out when the final app
+    is ready to go.  It is only useful for the User facing
+    Camera.
+*/
+#camera--view, #camera--sensor, #camera--output{
     transform: scaleX(-1);
     filter: FlipH;
 }
-
 #camera--trigger{
     width: 200px;
     background-color: black;
@@ -272,7 +116,7 @@ video {
     text-align: center;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
     position: fixed;
-    bottom: 110px;
+    bottom: 60px;
     left: calc(50% - 100px);
 }
 
@@ -287,7 +131,7 @@ video {
     text-align: center;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
     position: fixed;
-    bottom: 55px;
+    bottom: 5px;
     left: calc(50% - 119px);
 }
 
