@@ -7,6 +7,7 @@
     ViewData["Title"] = "Camera Page";
 }
 
+<video id="camera--view" autoplay playsinline></video>
 <p> <canvas id="canvas"></canvas> </p>
 <button id="start-button" onclick="startFunction()">Grab one frame</button>
 <button onclick="invert()">Invert grabbed frame</button>
@@ -30,6 +31,23 @@ const
     }, 
     audio: false 
 };
+    
+// Define constants
+const cameraView = document.querySelector("#camera--view");
+
+// Access the device camera and stream to cameraView
+function cameraStart() {
+    navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(function(stream) {
+            track = stream.getTracks()[0];
+            cameraView.srcObject = stream;
+        })
+        .catch(function(error) {
+            console.error("Oops. Something is broken.", error);
+        });
+}    
+    
 var canvas = document.getElementById('canvas');
 var videoTrack;
 
@@ -73,6 +91,9 @@ downloadTrigger.onclick = function() {
     .replace("image/jpeg", "image/octet-stream");    
     downloadTrigger.setAttribute("href", canvas);
 };
+    
+// Start the video stream when the window loads
+window.addEventListener("load", cameraStart, false);    
 
 /*<span class="error"></span>
 <br>
@@ -200,7 +221,8 @@ downloadTrigger.onclick = function() {
     transform: scaleX(-1);
     filter: FlipH;
 }
-#camera--trigger{
+
+#start-button{
     width: 200px;
     background-color: black;
     color: white;
@@ -211,7 +233,7 @@ downloadTrigger.onclick = function() {
     text-align: center;
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.2);
     position: fixed;
-    bottom: 60px;
+    bottom: 120px;
     left: calc(50% - 100px);
 }
 
