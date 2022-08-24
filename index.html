@@ -7,113 +7,56 @@
     ViewData["Title"] = "Camera Page";
 }
 
-
-@{
-    ViewData["Title"] = "Home Page";
-}
-
-
-<span class="error"></span>
-<br>
-<label for="interval">Time between images in seconds: </label>
-<input id="interval" type="text" value="1" min="1" pattern="\d+">
-<br>
-<button id="start">Start</button>
-<br>
-<label for="hideVid">Hide video element: </label>
-<input id="hideVid" type="checkbox">
-<br>
-<p>Camera Settings</p>
-<span id="settings"></span>
-<p>Camera capabilities</p>
-<span id="caps"></span>
-<br>
-<video autoplay muted playsinline></video>
-<p>
-  Images captured: <span id="image_count">0</span>
-</p>
-<br>
-<button id="stop" disabled>Stop & Show Images</button>
-<div id="images"></div>
+<p> <canvas id="canvas"></canvas> </p>
+<button id="start-button" onclick="startFunction()">Grab one frame</button>
+<button onclick="invert()">Invert grabbed frame</button>
 
 <script>
-       // check for support
-    if(typeof ImageCapture === 'undefined'){
-        const supportError = "ImageCapture is not supported by your browser";
-        const errorSpan = document.querySelector('span.error');
-        errorSpan.style = "color:red;font-size:larger;font-weight:bold";
-        errorSpan.innerText = supportError;
-        console.error(supportError);
-    }
 
-    const startBtn = document.querySelector('button#start');
-    const stopBtn = document.querySelector('button#stop');
-    const hideVid = document.querySelector('input#hideVid')
-    const intervalSec = document.querySelector('input#interval');
-    const videoElem = document.querySelector('video');
-    const imageCountSpan = document.querySelector('span#image_count');
-    const settingsSpan = document.querySelector('span#settings');
-    const capsSpan = document.querySelector('span#caps');
-    const imagesDiv = document.querySelector('div#images');
-    const storage = [];     // Use this array as our database
-    let stream, captureInterval;
+//const constraints = { "video": { width: { max: 320 } } };
+    var constraints = { 
+    video: { 
+        facingMode: {exact: "user" },        
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+    }, 
+    audio: false 
+};
+var canvas = document.getElementById('canvas');
+var videoTrack;
 
-    hideVid.onclick = () => videoElem.hidden = hideVid.checked;
+function startFunction() {
+  navigator.mediaDevices.getUserMedia(constraints)
+      .then(gotMedia)
+      .catch(e => { console.error('getUserMedia() failed: ', e); });
+}
 
+function gotMedia(mediastream) {
+  videoTrack = mediastream.getVideoTracks()[0];
+  var imageCapture = new ImageCapture(videoTrack);
+  imageCapture.grabFrame()
+      .then(processFrame)
+      .catch(e => console.error('grabFrame() failed: ' + e));
+}
 
-    startBtn.onclick = async () => {
-        startBtn.disabled = true;
+function processFrame(imageBitmap) {
+  canvas.width = imageBitmap.width;
+  canvas.height = imageBitmap.height;
+  canvas.getContext('2d').drawImage(imageBitmap, 0, 0);
 
-        stream = await navigator.mediaDevices.getUserMedia({video: true});
-        videoElem.onplaying = () => console.log("video playing stream:", videoElem.srcObject);
-        videoElem.srcObject = stream;
+  videoTrack.stop();
+}
 
-        const [track] = stream.getVideoTracks();
-        const imageCapture = new ImageCapture(track);
-        const photoCapabilities = await imageCapture.getPhotoCapabilities();
-        capsSpan.innerText = JSON.stringify(photoCapabilities);
-        console.log("Photo Capabilities: ", photoCapabilities);
-        const photoSettings = await imageCapture.getPhotoSettings();
-        settingsSpan.innerText = JSON.stringify(photoSettings);
-        console.log("Photo settings: ", photoSettings);
+function invert() {
+  var ctx = canvas.getContext('2d');
+  var imageData = ctx.getImageData(0,0,canvas.width, canvas.height);
 
-        // (data check on the interval value) * that value is in seconds  * frame timestamps are in microseconds
-        const interval = (parseInt(intervalSec.value) >= 1 ? intervalSec.value * 1 : 1) * 1000;
-        captureInterval = setInterval(async () => {
-            const blob = await imageCapture.takePhoto()
-                .catch(err => console.error(err)); // It took a few seconds for me the camera to get ready
-
-            if(blob){
-                console.log(blob);
-                storage.push(blob);
-                imageCountSpan.innerText++;
-            }
-
-        }, interval);
-
-        stopBtn.disabled = false;
-    }
-
-    stopBtn.onclick = () => {
-        // stop capture
-        clearInterval(captureInterval);
-
-        // close the camera
-        stream.getTracks().forEach(track => track.stop());
-
-        // Display each image
-        function showImages() {
-            const blob = storage.shift();
-            const imageUrl = URL.createObjectURL(blob);
-            const imgElem = new Image();
-            imgElem.src = imageUrl;
-            imagesDiv.appendChild(imgElem);
-
-            if (storage.length > 0)
-                showImages();
-        }
-
-        console.log("stored images");
-        showImages();
-    }
+  var data = imageData.data;
+  for (var i = 0; i < data.length; i += 4) {
+    data[i]     = 255 - data[i];     // red
+    data[i + 1] = 255 - data[i + 1]; // green
+    data[i + 2] = 255 - data[i + 2]; // blue
+  }
+  ctx.putImageData(imageData, 0, 0);
+}
 </script>
